@@ -18,9 +18,7 @@ module.exports = {
 
   index: (req, res, next) => {
     new Promise((resolve, reject) => {
-      const query = HotelUser.find();
-      const sortString = 'email ASC';
-      const results = query.sort(sortString).populateAll();
+      const results = HotelUser.find().sort('email ASC').populateAll();
       if(results) {
         resolve(results)
       } else {
@@ -35,14 +33,32 @@ module.exports = {
   findOne: (req, res, next) => {
     const id = req.param('id');
     new Promise((resolve, reject) => {
-      const result = HotelUser.findOne(id).populateAll();
+      const result = HotelUser.findOne({ id }).populateAll();
       if (result) {
         resolve(result);
       } else {
-        resolve({});
+        const error = new Error('Internal server error')
+        reject(error);
       }
     })
       .then(result => res.status(200).json(result))
+      .catch(next);
+  },
+
+  findByField: (req, res, next) => {
+    const field = req.param('field');
+    const value = req.param('value');
+
+    new Promise((resolve, reject) => {
+      const results = HotelUser.find({ [field]: value }).sort('email ASC').populateAll();
+      if(results) {
+        resolve(results)
+      } else {
+        const error = new Error('Internal server error');
+        reject(error)
+      }
+    })
+      .then(results => res.status(200).json(results))
       .catch(next);
   },
 
