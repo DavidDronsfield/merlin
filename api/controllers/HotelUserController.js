@@ -1,7 +1,11 @@
+const { toLowercase } = require('../../helpers/formatter');
+
 module.exports = {
 
   create: (req, res, next) => {
-    const params = req.params.all();
+    const email = toLowercase(req.param('email'));
+    const password = req.param('password');
+    const params = { email, password };
     new Promise((resolve, reject) => {
       HotelUser.create(params, (error, hotelUser) => {
         if (error) {
@@ -47,7 +51,7 @@ module.exports = {
 
   findByField: (req, res, next) => {
     const field = req.param('field');
-    const value = req.param('value');
+    let value = toLowercase(field) === 'email' ? toLowercase(req.param('value')) : req.param('value'); // Because emails are automatically stored in lowercase
 
     new Promise((resolve, reject) => {
       const results = HotelUser.find({ [field]: value }).sort('email ASC').populateAll();
