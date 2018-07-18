@@ -1,7 +1,7 @@
 module.exports.routes = {
-  'POST /user/create': 'UserController.create',
-  'GET /user': 'UserController.index',
-  'GET /user/:id': 'UserController.find',
-  'POST /user/:id': 'UserController.update',
-  'DELETE /user/:id': 'UserController.delete'
+  'POST /hoteluser': 'HotelUserController.create',
+  'GET /hoteluser': 'HotelUserController.index',
+  'GET /hoteluser/:id': 'HotelUserController.findOne',
+  'POST /hoteluser/:id': 'HotelUserController.update',
+  'DELETE /hoteluser/:id': 'HotelUserController.delete'
 };
