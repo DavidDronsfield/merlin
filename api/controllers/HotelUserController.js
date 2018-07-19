@@ -85,7 +85,9 @@ module.exports = {
 
   findByField: (req, res, next) => {
     const field = req.param('field');
-    const value = toLowercase(field) === 'email' ? toLowercase(req.param('value')) : req.param('value'); // Because emails are automatically stored in lowercase
+    const value = toLowercase(field) === 'email' // Because emails are automatically stored in lowercase
+      ? toLowercase(req.param('value'))
+      : req.param('value');
     new Promise((resolve, reject) => {
       const results = HotelUser.find({ [field]: value }).sort('email ASC').populateAll();
       if(results) {
