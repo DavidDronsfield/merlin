@@ -55,7 +55,6 @@ module.exports = {
   },
 
   checkPassword: (req, res, next) => {
-    console.log('controller hit');
     const email = req.param('email');
     const newPassword = req.param('password');
     new Promise((resolve, reject) => {
