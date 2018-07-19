@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const { toLowercase } = require('../../helpers/formatter');
 
 module.exports = {
@@ -6,6 +7,7 @@ module.exports = {
     const email = toLowercase(req.param('email'));
     const password = req.param('password');
     const params = { email, password };
+
     new Promise((resolve, reject) => {
       HotelUser.create(params, (error, hotelUser) => {
         if (error) {
@@ -45,14 +47,45 @@ module.exports = {
         reject(error);
       }
     })
-      .then(result => res.status(200).json(result))
+      .then(user => {
+        if(!user) return res.status(404).json({ userFound: false });
+        return res.status(200).json(user);
+      })
+      .catch(next);
+  },
+
+  checkPassword: (req, res, next) => {
+    console.log('controller hit');
+    const email = req.param('email');
+    const newPassword = req.param('password');
+    new Promise((resolve, reject) => {
+      const result = HotelUser.findOne({ email });
+      if (result) {
+        resolve(result);
+      } else {
+        const error = new Error('Internal server error')
+        reject(error);
+      }
+    })
+      .then(async (result) => {
+        if(!result) return res.status(404).json({ userFound: false });
+        const isCorrectPassword = await bcrypt.compare(newPassword, result.password);
+        if(!isCorrectPassword) return res.status(200).json({
+          userFound: true,
+          isCorrectPassword
+        });
+        return res.status(200).json({
+          userFound: true,
+          isCorrectPassword,
+          user: result
+        });
+      })
       .catch(next);
   },
 
   findByField: (req, res, next) => {
     const field = req.param('field');
-    let value = toLowercase(field) === 'email' ? toLowercase(req.param('value')) : req.param('value'); // Because emails are automatically stored in lowercase
-
+    const value = toLowercase(field) === 'email' ? toLowercase(req.param('value')) : req.param('value'); // Because emails are automatically stored in lowercase
     new Promise((resolve, reject) => {
       const results = HotelUser.find({ [field]: value }).sort('email ASC').populateAll();
       if(results) {
