@@ -19,7 +19,6 @@ module.exports = {
     })
       .then(user => res.status(200).json(user))
       .catch(next);
-    
   },
 
   index: (req, res, next) => {
@@ -62,7 +61,7 @@ module.exports = {
       if (result) {
         resolve(result);
       } else {
-        const error = new Error('Internal server error')
+        const error = new Error('Internal server error');
         reject(error);
       }
     })
